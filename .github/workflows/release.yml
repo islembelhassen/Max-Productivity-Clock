@@ -35,7 +35,7 @@ jobs:
       - name: Checksum
         run: sha256sum build/app/outputs/flutter-apk/app-release.apk > build/app/outputs/flutter-apk/app-release.apk.sha256
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             build/app/outputs/flutter-apk/app-release.apk
