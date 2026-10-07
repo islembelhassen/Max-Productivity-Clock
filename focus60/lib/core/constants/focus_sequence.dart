@@ -1,0 +1,2 @@
+const workBlocksMinutes = [50, 40, 30, 20, 10];
+const breakMinutes = 10;
