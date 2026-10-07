@@ -1,54 +1,48 @@
-# --- Flutter / Dart ---
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
 .dart_tool/
-.flutter-plugins
 .flutter-plugins-dependencies
-.packages
 .pub-cache/
 .pub/
-build/
-coverage/
-*.iml
-.idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-.metadata
-.fvm/
+/build/
+/coverage/
 
-# --- Code généré (optionnel : retire ces lignes si tu préfères le commiter) ---
-*.g.dart
-*.freezed.dart
+# Symbolication related
+app.*.symbols
 
-# --- Android ---
-android/.gradle/
-android/captures/
-android/local.properties
-android/gradlew.bat
-android/app/debug/
-android/app/profile/
-android/app/release/
-**/android/key.properties
-**/android/app/*.jks
-**/android/app/*.keystore
-*.jks
-*.keystore
-*.apk
-*.aab
+# Obfuscation related
+app.*.map.json
 
-# --- Symboles d'obfuscation (garde-les en artefact CI, pas dans Git) ---
-build/symbols/
-*.symbols
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
 
-# --- Secrets ---
-.env
-.env.*
-*.pem
-*.key
-secrets/
-google-services.json
-service-account*.json
-
-# --- Divers ---
-.DS_Store
-*.log
-*.swp
+# Widget Preview related
+.widget_preview/
