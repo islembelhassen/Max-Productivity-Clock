@@ -5,7 +5,7 @@ class Goals extends Table {
   TextColumn get title => text().withLength(min: 1, max: 120)();
   TextColumn get description => text().nullable()();
   DateTimeColumn get dueDate => dateTime().nullable()();
-  IntColumn get priority => integer().withDefault(const Constant(1))(); // 0 bas, 1 normal, 2 haut
+  IntColumn get priority => integer().withDefault(const Constant(1))();
   BoolColumn get isDone => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
@@ -23,8 +23,11 @@ class Tasks extends Table {
 /// Un bloc de travail (50, 40, 30, 20 ou 10 min), pas la pause.
 class FocusSessions extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get taskId =>
-      integer().nullable().references(Tasks, #id, onDelete: KeyAction.setNull)();
+  IntColumn get taskId => integer().nullable().references(
+    Tasks,
+    #id,
+    onDelete: KeyAction.setNull,
+  )();
   IntColumn get plannedMinutes => integer()();
   IntColumn get actualSeconds => integer().withDefault(const Constant(0))();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();

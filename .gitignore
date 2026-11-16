@@ -46,3 +46,34 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+
+
+# --- Secrets de signature Android ---
+**/android/key.properties
+*.jks
+*.keystore
+
+# --- Config locale Android ---
+android/local.properties
+android/.gradle/
+android/captures/
+
+# --- Binaires et symboles ---
+*.apk
+*.aab
+build/symbols/
+
+# --- Secrets divers ---
+.env
+.env.*
+*.pem
+google-services.json
+service-account*.json
+secrets/
+
+# DevTools
+devtools_options.yaml
+
+
+

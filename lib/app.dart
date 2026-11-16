@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'core/ui.dart';
+import 'features/home/home_shell.dart';
+
 class FocusApp extends StatelessWidget {
   const FocusApp({super.key});
 
@@ -8,13 +11,8 @@ class FocusApp extends StatelessWidget {
     return MaterialApp(
       title: 'Focus60',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.indigo,
-        useMaterial3: true,
-      ),
-      home: const Scaffold(
-        body: Center(child: Text('Focus60')),
-      ),
+      theme: buildAppTheme(),
+      home: const HomeShell(),
     );
   }
 }
