@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../agent/config/agent_config.dart';
+import '../../agent/ui/ai_plan_preview_dialog.dart';
+import '../../agent/ui/ai_planning_sheet.dart';
+import '../../agent/ui/api_key_prompt_dialog.dart';
 import '../../core/ui.dart';
 import '../../data/db/app_database.dart';
 import '../../data/repositories/goal_repository.dart';
@@ -8,6 +12,29 @@ import '../../providers.dart';
 
 class GoalsPage extends ConsumerWidget {
   const GoalsPage({super.key});
+
+  Future<void> _launchAiPlanner(
+    BuildContext context,
+    GoalRepository repo,
+  ) async {
+    // 1. Récupérer la clé API
+    var apiKey = await getEffectiveApiKey();
+
+    if (context.mounted && apiKey.isEmpty) {
+      final entered = await showApiKeyPromptDialog(context);
+      if (entered == null || entered.isEmpty) return;
+      apiKey = entered;
+    }
+
+    if (!context.mounted) return;
+
+    // 2. Afficher le bottom sheet de saisie
+    final plan = await showAiPlanningSheet(context, apiKey: apiKey);
+    if (plan == null || !context.mounted) return;
+
+    // 3. Prévisualiser et enregistrer
+    await showAiPlanPreviewDialog(context, plan: plan, repo: repo);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -197,6 +224,15 @@ class GoalsPage extends ConsumerWidget {
                 ),
               ),
               child: const Text('+ Nouvel objectif'),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.tonal(
+              onPressed: () => _launchAiPlanner(context, repo),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                shape: const StadiumBorder(),
+              ),
+              child: const Text('✨ Planifier avec l\'IA'),
             ),
           ],
         );

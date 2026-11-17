@@ -17,6 +17,7 @@ class Tasks extends Table {
   TextColumn get title => text().withLength(min: 1, max: 160)();
   BoolColumn get isDone => boolean().withDefault(const Constant(false))();
   IntColumn get estimatedMinutes => integer().nullable()();
+  IntColumn get remainingMinutes => integer().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 

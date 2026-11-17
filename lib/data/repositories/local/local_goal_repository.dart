@@ -84,6 +84,47 @@ class LocalGoalRepository implements GoalRepository {
   }
 
   @override
+  Future<void> decrementTaskTime(int taskId, int secondsToDeduct) async {
+    final rows = await (_db.select(_db.tasks)
+          ..where((t) => t.id.equals(taskId)))
+        .get();
+    if (rows.isEmpty) return;
+    final task = rows.first;
+    // Utilise remainingMinutes si défini, sinon estimatedMinutes
+    final currentMinutes = task.remainingMinutes ?? task.estimatedMinutes;
+    if (currentMinutes == null) return;
+    final newSeconds = currentMinutes * 60 - secondsToDeduct;
+    final newMinutes = (newSeconds / 60).ceil().clamp(0, 9999);
+    if (newMinutes <= 0) {
+      await (_db.update(_db.tasks)..where((t) => t.id.equals(taskId))).write(
+        const TasksCompanion(
+          isDone: Value(true),
+          remainingMinutes: Value(0),
+        ),
+      );
+    } else {
+      await (_db.update(_db.tasks)..where((t) => t.id.equals(taskId))).write(
+        TasksCompanion(remainingMinutes: Value(newMinutes)),
+      );
+    }
+  }
+
+  @override
+  Future<Task?> getNextTask(int goalId, int afterTaskId) async {
+    final tasks = await (_db.select(_db.tasks)
+          ..where(
+            (t) =>
+                t.goalId.equals(goalId) &
+                t.isDone.equals(false) &
+                t.id.isBiggerThanValue(afterTaskId),
+          )
+          ..orderBy([(t) => OrderingTerm.asc(t.createdAt)])
+          ..limit(1))
+        .get();
+    return tasks.isEmpty ? null : tasks.first;
+  }
+
+  @override
   Future<void> updateGoal({
     required int id,
     String? title,

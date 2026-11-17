@@ -520,6 +520,17 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _remainingMinutesMeta = const VerificationMeta(
+    'remainingMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> remainingMinutes = GeneratedColumn<int>(
+    'remaining_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -539,6 +550,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     title,
     isDone,
     estimatedMinutes,
+    remainingMinutes,
     createdAt,
   ];
   @override
@@ -587,6 +599,15 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         ),
       );
     }
+    if (data.containsKey('remaining_minutes')) {
+      context.handle(
+        _remainingMinutesMeta,
+        remainingMinutes.isAcceptableOrUnknown(
+          data['remaining_minutes']!,
+          _remainingMinutesMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -622,6 +643,10 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         DriftSqlType.int,
         data['${effectivePrefix}estimated_minutes'],
       ),
+      remainingMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}remaining_minutes'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -641,6 +666,7 @@ class Task extends DataClass implements Insertable<Task> {
   final String title;
   final bool isDone;
   final int? estimatedMinutes;
+  final int? remainingMinutes;
   final DateTime createdAt;
   const Task({
     required this.id,
@@ -648,6 +674,7 @@ class Task extends DataClass implements Insertable<Task> {
     required this.title,
     required this.isDone,
     this.estimatedMinutes,
+    this.remainingMinutes,
     required this.createdAt,
   });
   @override
@@ -659,6 +686,9 @@ class Task extends DataClass implements Insertable<Task> {
     map['is_done'] = Variable<bool>(isDone);
     if (!nullToAbsent || estimatedMinutes != null) {
       map['estimated_minutes'] = Variable<int>(estimatedMinutes);
+    }
+    if (!nullToAbsent || remainingMinutes != null) {
+      map['remaining_minutes'] = Variable<int>(remainingMinutes);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -673,6 +703,9 @@ class Task extends DataClass implements Insertable<Task> {
       estimatedMinutes: estimatedMinutes == null && nullToAbsent
           ? const Value.absent()
           : Value(estimatedMinutes),
+      remainingMinutes: remainingMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remainingMinutes),
       createdAt: Value(createdAt),
     );
   }
@@ -688,6 +721,7 @@ class Task extends DataClass implements Insertable<Task> {
       title: serializer.fromJson<String>(json['title']),
       isDone: serializer.fromJson<bool>(json['isDone']),
       estimatedMinutes: serializer.fromJson<int?>(json['estimatedMinutes']),
+      remainingMinutes: serializer.fromJson<int?>(json['remainingMinutes']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -700,6 +734,7 @@ class Task extends DataClass implements Insertable<Task> {
       'title': serializer.toJson<String>(title),
       'isDone': serializer.toJson<bool>(isDone),
       'estimatedMinutes': serializer.toJson<int?>(estimatedMinutes),
+      'remainingMinutes': serializer.toJson<int?>(remainingMinutes),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -710,6 +745,7 @@ class Task extends DataClass implements Insertable<Task> {
     String? title,
     bool? isDone,
     Value<int?> estimatedMinutes = const Value.absent(),
+    Value<int?> remainingMinutes = const Value.absent(),
     DateTime? createdAt,
   }) => Task(
     id: id ?? this.id,
@@ -719,6 +755,9 @@ class Task extends DataClass implements Insertable<Task> {
     estimatedMinutes: estimatedMinutes.present
         ? estimatedMinutes.value
         : this.estimatedMinutes,
+    remainingMinutes: remainingMinutes.present
+        ? remainingMinutes.value
+        : this.remainingMinutes,
     createdAt: createdAt ?? this.createdAt,
   );
   Task copyWithCompanion(TasksCompanion data) {
@@ -730,6 +769,9 @@ class Task extends DataClass implements Insertable<Task> {
       estimatedMinutes: data.estimatedMinutes.present
           ? data.estimatedMinutes.value
           : this.estimatedMinutes,
+      remainingMinutes: data.remainingMinutes.present
+          ? data.remainingMinutes.value
+          : this.remainingMinutes,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -742,14 +784,22 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('title: $title, ')
           ..write('isDone: $isDone, ')
           ..write('estimatedMinutes: $estimatedMinutes, ')
+          ..write('remainingMinutes: $remainingMinutes, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, goalId, title, isDone, estimatedMinutes, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    goalId,
+    title,
+    isDone,
+    estimatedMinutes,
+    remainingMinutes,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -759,6 +809,7 @@ class Task extends DataClass implements Insertable<Task> {
           other.title == this.title &&
           other.isDone == this.isDone &&
           other.estimatedMinutes == this.estimatedMinutes &&
+          other.remainingMinutes == this.remainingMinutes &&
           other.createdAt == this.createdAt);
 }
 
@@ -768,6 +819,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<String> title;
   final Value<bool> isDone;
   final Value<int?> estimatedMinutes;
+  final Value<int?> remainingMinutes;
   final Value<DateTime> createdAt;
   const TasksCompanion({
     this.id = const Value.absent(),
@@ -775,6 +827,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.title = const Value.absent(),
     this.isDone = const Value.absent(),
     this.estimatedMinutes = const Value.absent(),
+    this.remainingMinutes = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   TasksCompanion.insert({
@@ -783,6 +836,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     required String title,
     this.isDone = const Value.absent(),
     this.estimatedMinutes = const Value.absent(),
+    this.remainingMinutes = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : goalId = Value(goalId),
        title = Value(title);
@@ -792,6 +846,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Expression<String>? title,
     Expression<bool>? isDone,
     Expression<int>? estimatedMinutes,
+    Expression<int>? remainingMinutes,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -800,6 +855,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       if (title != null) 'title': title,
       if (isDone != null) 'is_done': isDone,
       if (estimatedMinutes != null) 'estimated_minutes': estimatedMinutes,
+      if (remainingMinutes != null) 'remaining_minutes': remainingMinutes,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -810,6 +866,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Value<String>? title,
     Value<bool>? isDone,
     Value<int?>? estimatedMinutes,
+    Value<int?>? remainingMinutes,
     Value<DateTime>? createdAt,
   }) {
     return TasksCompanion(
@@ -818,6 +875,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       title: title ?? this.title,
       isDone: isDone ?? this.isDone,
       estimatedMinutes: estimatedMinutes ?? this.estimatedMinutes,
+      remainingMinutes: remainingMinutes ?? this.remainingMinutes,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -840,6 +898,9 @@ class TasksCompanion extends UpdateCompanion<Task> {
     if (estimatedMinutes.present) {
       map['estimated_minutes'] = Variable<int>(estimatedMinutes.value);
     }
+    if (remainingMinutes.present) {
+      map['remaining_minutes'] = Variable<int>(remainingMinutes.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -854,6 +915,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('title: $title, ')
           ..write('isDone: $isDone, ')
           ..write('estimatedMinutes: $estimatedMinutes, ')
+          ..write('remainingMinutes: $remainingMinutes, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -1692,6 +1754,7 @@ typedef $$TasksTableCreateCompanionBuilder = TasksCompanion Function({
   required String title,
   Value<bool> isDone,
   Value<int?> estimatedMinutes,
+  Value<int?> remainingMinutes,
   Value<DateTime> createdAt,
 });
 typedef $$TasksTableUpdateCompanionBuilder = TasksCompanion Function({
@@ -1700,6 +1763,7 @@ typedef $$TasksTableUpdateCompanionBuilder = TasksCompanion Function({
   Value<String> title,
   Value<bool> isDone,
   Value<int?> estimatedMinutes,
+  Value<int?> remainingMinutes,
   Value<DateTime> createdAt,
 });
 
@@ -1768,6 +1832,11 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
 
   ColumnFilters<int> get estimatedMinutes => $composableBuilder(
     column: $table.estimatedMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get remainingMinutes => $composableBuilder(
+    column: $table.remainingMinutes,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1854,6 +1923,11 @@ class $$TasksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get remainingMinutes => $composableBuilder(
+    column: $table.remainingMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -1903,6 +1977,11 @@ class $$TasksTableAnnotationComposer
 
   GeneratedColumn<int> get estimatedMinutes => $composableBuilder(
     column: $table.estimatedMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get remainingMinutes => $composableBuilder(
+    column: $table.remainingMinutes,
     builder: (column) => column,
   );
 
@@ -1991,6 +2070,7 @@ class $$TasksTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<bool> isDone = const Value.absent(),
                 Value<int?> estimatedMinutes = const Value.absent(),
+                Value<int?> remainingMinutes = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => TasksCompanion(
                 id: id,
@@ -1998,6 +2078,7 @@ class $$TasksTableTableManager
                 title: title,
                 isDone: isDone,
                 estimatedMinutes: estimatedMinutes,
+                remainingMinutes: remainingMinutes,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -2007,6 +2088,7 @@ class $$TasksTableTableManager
                 required String title,
                 Value<bool> isDone = const Value.absent(),
                 Value<int?> estimatedMinutes = const Value.absent(),
+                Value<int?> remainingMinutes = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => TasksCompanion.insert(
                 id: id,
@@ -2014,6 +2096,7 @@ class $$TasksTableTableManager
                 title: title,
                 isDone: isDone,
                 estimatedMinutes: estimatedMinutes,
+                remainingMinutes: remainingMinutes,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0

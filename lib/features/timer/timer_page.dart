@@ -30,6 +30,8 @@ class _TimerPageState extends ConsumerState<TimerPage> {
 
   int? _currentSessionId;
   int _elapsedSecondsInBlock = 0;
+  // Compteur de secondes de travail pour décrémenter la tâche active (toutes les 60s)
+  int _taskSecondsAccumulator = 0;
 
   late DndService _dndService;
   late LockService _lockService;
@@ -84,7 +86,15 @@ class _TimerPageState extends ConsumerState<TimerPage> {
 
   Future<void> _tick() async {
     if (_remaining > 1) {
-      if (!_onBreak) _elapsedSecondsInBlock++;
+      if (!_onBreak) {
+        _elapsedSecondsInBlock++;
+        _taskSecondsAccumulator++;
+        // Décrémenter la tâche active toutes les 60 secondes
+        if (_taskSecondsAccumulator >= 60) {
+          _taskSecondsAccumulator = 0;
+          await _decrementActiveTask();
+        }
+      }
       setState(() => _remaining--);
       return;
     }
@@ -135,6 +145,7 @@ class _TimerPageState extends ConsumerState<TimerPage> {
     final wasBreak = _onBreak;
     _currentSessionId = null;
     _elapsedSecondsInBlock = 0;
+    _taskSecondsAccumulator = 0;
 
     setState(() {
       _running = false;
@@ -148,6 +159,33 @@ class _TimerPageState extends ConsumerState<TimerPage> {
     }
     if (_dnd) await _dndService.disable();
     if (_lock) await _lockService.stop();
+  }
+
+  /// Décrémente la tâche active de 60 secondes et auto-avance si terminée.
+  Future<void> _decrementActiveTask() async {
+    final activeTask = ref.read(activeTaskProvider);
+    if (activeTask == null) return;
+
+    final repo = ref.read(goalRepositoryProvider);
+    await repo.decrementTaskTime(activeTask.id, 60);
+
+    // Vérifier si la tâche est maintenant terminée et passer à la suivante
+    final tasks = await repo.watchTasks(activeTask.goalId).first;
+    final updated = tasks.where((t) => t.id == activeTask.id).firstOrNull;
+    if (updated != null && updated.isDone) {
+      final next = await repo.getNextTask(activeTask.goalId, activeTask.id);
+      if (mounted) {
+        ref.read(activeTaskProvider.notifier).select(next);
+        if (next != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('⏭ Tâche suivante : ${next.title}'),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    }
   }
 
   @override

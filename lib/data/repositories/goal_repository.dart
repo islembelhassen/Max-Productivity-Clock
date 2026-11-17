@@ -26,6 +26,8 @@ abstract class GoalRepository {
   });
   Future<void> setTaskDone(int taskId, {required bool done});
   Future<void> deleteGoal(int goalId);
+  Future<void> decrementTaskTime(int taskId, int secondsToDeduct);
+  Future<Task?> getNextTask(int goalId, int afterTaskId);
 
   Future<void> updateGoal({
     required int id,

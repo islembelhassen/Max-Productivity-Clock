@@ -67,6 +67,7 @@ build/symbols/
 # --- Secrets divers ---
 .env
 .env.*
+!.env.example
 *.pem
 google-services.json
 service-account*.json
