@@ -38,7 +38,6 @@ class AgentPlanner {
       userMessage.write('\nÉchéance : ${request.deadline}');
     }
 
-
     return _service.generatePlan(
       _systemPrompt,
       userMessage.toString(),
