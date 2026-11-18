@@ -14,7 +14,7 @@ Future<void> main() async {
   try {
     await dotenv.load(fileName: ".env"); // Load environment variables
   } catch (e) {
-    throw Exception('Error loading .env file: $e'); // Print error if any
+    throw Exception("Error loading .env file: "); // Print error if any
   }
 
   runApp(
