@@ -41,8 +41,9 @@ class _AiPlanPreviewDialogState extends State<_AiPlanPreviewDialog> {
         .map(
           (t) => _EditableTask(
             titleCtrl: TextEditingController(text: t.title),
-            minutesCtrl:
-                TextEditingController(text: t.estimatedMinutes.toString()),
+            minutesCtrl: TextEditingController(
+              text: t.estimatedMinutes.toString(),
+            ),
           ),
         )
         .toList();
@@ -84,9 +85,8 @@ class _AiPlanPreviewDialogState extends State<_AiPlanPreviewDialog> {
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Erreur : $e')));
       }
     }
   }
@@ -124,10 +124,7 @@ class _AiPlanPreviewDialogState extends State<_AiPlanPreviewDialog> {
               children: [
                 const Text(
                   '✨ Plan IA',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 IconButton(
@@ -166,17 +163,11 @@ class _AiPlanPreviewDialogState extends State<_AiPlanPreviewDialog> {
                   const SizedBox(height: 20),
                   const Text(
                     'Tâches',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   for (int i = 0; i < _tasks.length; i++) ...[
-                    _TaskRow(
-                      task: _tasks[i],
-                      onRemove: () => _removeTask(i),
-                    ),
+                    _TaskRow(task: _tasks[i], onRemove: () => _removeTask(i)),
                     const SizedBox(height: 8),
                   ],
                   TextButton.icon(
@@ -252,8 +243,7 @@ class _TaskRow extends StatelessWidget {
             decoration: const InputDecoration(
               hintText: 'Titre de la tâche',
               isDense: true,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             ),
           ),
         ),
@@ -267,8 +257,7 @@ class _TaskRow extends StatelessWidget {
             decoration: const InputDecoration(
               hintText: 'min',
               isDense: true,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 10),
               suffixText: 'min',
             ),
           ),
