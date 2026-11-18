@@ -16,8 +16,9 @@ class GroqService {
     String userMessage, {
     String? apiKeyOverride,
   }) async {
-    final key =
-        (apiKeyOverride?.isNotEmpty ?? false) ? apiKeyOverride! : _apiKey;
+    final key = (apiKeyOverride?.isNotEmpty ?? false)
+        ? apiKeyOverride!
+        : _apiKey;
     if (key.isEmpty) {
       throw Exception('Clé API Groq manquante. Veuillez la configurer.');
     }
@@ -46,10 +47,7 @@ class GroqService {
     }
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
-    final content =
-        body['choices'][0]['message']['content'] as String;
-    return AiPlanResult.fromJson(
-      jsonDecode(content) as Map<String, dynamic>,
-    );
+    final content = body['choices'][0]['message']['content'] as String;
+    return AiPlanResult.fromJson(jsonDecode(content) as Map<String, dynamic>);
   }
 }

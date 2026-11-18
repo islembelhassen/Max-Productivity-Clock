@@ -106,8 +106,7 @@ class _AiPlanningSheetState extends State<_AiPlanningSheet> {
             maxLines: 3,
             decoration: InputDecoration(
               labelText: 'Mon objectif *',
-              hintText:
-                  'Ex : Apprendre les bases de Flutter en 1 semaine',
+              hintText: 'Ex : Apprendre les bases de Flutter en 1 semaine',
               errorText: _error,
             ),
           ),
@@ -134,7 +133,9 @@ class _AiPlanningSheetState extends State<_AiPlanningSheet> {
                       ),
                     )
                   : const Icon(Icons.auto_awesome),
-              label: Text(_loading ? 'Génération en cours...' : 'Générer le plan'),
+              label: Text(
+                _loading ? 'Génération en cours...' : 'Générer le plan',
+              ),
             ),
           ),
           const SizedBox(height: 24),
